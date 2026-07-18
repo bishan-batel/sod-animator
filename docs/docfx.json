@@ -4,13 +4,13 @@
     {
       "src": [
         {
-          "src": "../../",
+          "src": "../",
           "files": [
             "**/*.csproj"
           ]
         }
       ],
-      "dest": "api"
+      "dest": "./api"
     }
   ],
   "build": {
@@ -35,14 +35,13 @@
     "template": [
       "default",
       "modern",
-      "templates/"
+      "templates/material"
     ],
     "globalMetadata": {
       "_appName": "SOD Animator",
       "_appTitle": "SOD Animator",
       "_enableSearch": true,
       "pdf": false,
-      "_appLogoPath": "./images/icon.svg",
       "_appFaviconPath": "./images/icon.svg"
     }
   }
