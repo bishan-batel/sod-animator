@@ -4,6 +4,9 @@ using Godot;
 
 namespace SecondOrderDynamics;
 
+/// <summary>
+/// Parameter constants to animate with second order dynamics.
+/// </summary>
 [GlobalClass, Tool, Icon("res://addons/SecondOrderDynamics/Icon/SodParams.svg")]
 public partial class SodParams : Resource {
   public float K1 { private set; get; }
@@ -12,7 +15,13 @@ public partial class SodParams : Resource {
 
   float _zeta = 1.0f, _freq = 1.0f, _response = 0.1f;
 
-  [Export(PropertyHint.Range, "0,10,0.001,or_greater")]
+  /// <summary>
+  /// The frequency of the system, this dictates how fast the system will react to changes in target position. If <see cref="Zeta"/> is set low,
+  /// then this will determine the frequency at which this may 'oscillate' as it settles to the target position.
+  ///
+  /// If this is set to below or equal to zero, the system will behave chaotically and will gain more energy over time.
+  /// </summary>
+  [Export(PropertyHint.Range, "0,10,0.001,or_greater,suffix:Hz")]
   public float Frequency {
     set {
       _freq = value;
@@ -22,6 +31,9 @@ public partial class SodParams : Resource {
     get => _freq;
   }
 
+  /// <summary>
+  /// The Damping Coefficient, 0 means energy is never lost while higher values make the system lose energy faster.
+  /// </summary>
   [Export(PropertyHint.Range, "0,5,0.001,or_greater")]
   public float Zeta {
     set {
@@ -31,7 +43,7 @@ public partial class SodParams : Resource {
     get => _zeta;
   }
 
-  [Export]
+  [Export(PropertyHint.Range, "-5,5,0.001,or_greater,suffix:px/s")]
   public float Response {
     set {
       _response = value;

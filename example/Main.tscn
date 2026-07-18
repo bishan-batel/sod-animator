@@ -2,11 +2,12 @@
 
 [ext_resource type="Script" uid="uid://dvp423jb6icgp" path="res://addons/SecondOrderDynamics/Animator/SodAnimator.cs" id="1_tlff6"]
 [ext_resource type="Script" uid="uid://cpyqqgoprjn5d" path="res://addons/SecondOrderDynamics/SodParams.cs" id="2_1qgvb"]
-[ext_resource type="Texture2D" uid="uid://cploaeae0tqis" path="res://addons/at-icons/node/club.svg" id="3_bl11y"]
 
 [sub_resource type="Resource" id="Resource_jlbjj"]
 script = ExtResource("2_1qgvb")
-Zeta = 0.2
+Frequency = 1.546
+Zeta = 0.262
+Response = -0.27
 metadata/_custom_type_script = "uid://cpyqqgoprjn5d"
 
 [node name="Main" type="Node2D" unique_id=517726004]
@@ -16,15 +17,13 @@ skew = -0.02
 [node name="SodAnimator" type="Node" parent="." unique_id=1326959813]
 script = ExtResource("1_tlff6")
 ValueType = 5
-TargetValue = Vector2(200, 235.71)
-UsePhysicsProcess = false
-RunInEditor = true
-SetterNode = NodePath("../Club")
-SetterProperty = &"global_position"
 Params = SubResource("Resource_jlbjj")
+TargetValue = Vector2(200, 235.71)
+RunInEditor = true
+SetterNode = NodePath("")
+SetterProperty = &"global_position"
 metadata/_custom_type_script = "uid://dvp423jb6icgp"
 
-[node name="Club" type="Sprite2D" parent="." unique_id=913661626]
-position = Vector2(190.45746, 239.71065)
-scale = Vector2(4.4177837, 4.4177837)
-texture = ExtResource("3_bl11y")
+[node name="RigidBody2D" type="RigidBody2D" parent="SodAnimator" unique_id=1339974036]
+linear_velocity = Vector2(2.26, 0)
+angular_damp = 17.44
