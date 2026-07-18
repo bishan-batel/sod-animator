@@ -6,6 +6,11 @@ using SecondOrderDynamics.Math;
 
 namespace SecondOrderDynamics.Editor;
 
+/// <summary>
+/// Editor-Only class for displaying the SOD System preview in the inspector.
+/// </summary>
+/// <param name="godotObject"></param>
+/// <param name="name"></param>
 [Tool]
 public partial class SodSingleEditor(GodotObject? godotObject, string name) : ColorRect {
   const float BaseLine = -1f;
@@ -22,13 +27,18 @@ public partial class SodSingleEditor(GodotObject? godotObject, string name) : Co
   string _name = name;
 
 
+  /// <summary>
+  /// Default Constructor
+  /// </summary>
   public SodSingleEditor() : this(null!, "") {
   }
 
+  /// <inheritdoc />
   public override void _Ready() {
-    Color = Colors.DarkSlateGray;
+    Control theme = EditorInterface.Singleton.GetBaseControl();
 
-    _targetLine.DefaultColor = Colors.LightSlateGray;
+    Color = theme.GetThemeColor("base_color", "Editor").Darkened(0.2f);
+    _targetLine.DefaultColor = theme.GetThemeColor("font_color", "Editor").Darkened(0.1f);
 
     _targetLine.Width = 2;
 
@@ -39,6 +49,7 @@ public partial class SodSingleEditor(GodotObject? godotObject, string name) : Co
     AddChild(_line);
   }
 
+  /// <inheritdoc />
   public override void _Process(double delta) {
     if (_godotObject is null) {
       _line.ClearPoints();
@@ -77,7 +88,10 @@ public partial class SodSingleEditor(GodotObject? godotObject, string name) : Co
 
       float slope = (state.Y - lastY) / DeltaTime;
 
-      grad.AddPoint(percent, Colors.PaleTurquoise.Lerp(Colors.PaleVioletRed, Mathf.Abs(slope)));
+      Control theme = EditorInterface.Singleton.GetBaseControl();
+
+      Color accent = theme.GetThemeColor("accent_color", "Editor");
+      grad.AddPoint(percent, accent.Lightened(0.5f).Lerp(accent.Lightened(0.3f), Mathf.Abs(slope)));
 
       // _line.AddPoint();
       lastY = state.Y;
