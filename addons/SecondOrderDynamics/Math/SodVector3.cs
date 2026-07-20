@@ -8,17 +8,9 @@ namespace SecondOrderDynamics.Math;
 /// </summary>
 public class SodVector3 : SecondOrderDynamics<Vector3> {
   /// <inheritdoc />
-  public SodVector3(float freq = 1, float zeta = 1, float response = 1, Vector3 x0 = default)
-    : base(freq, zeta, response, x0) {
-  }
-
   /// <inheritdoc />
-  public SodVector3(SecondOrderDynamics.SodParams @params, Vector3 x0 = default)
+  public SodVector3(SodParams? @params = null, Vector3 x0 = default)
     : base(@params, x0) {
-  }
-
-  /// <inheritdoc />
-  public SodVector3() : this(1) {
   }
 
   /// <inheritdoc />

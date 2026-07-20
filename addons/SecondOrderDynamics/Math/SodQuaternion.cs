@@ -12,17 +12,8 @@ public class SodQuaternion : SecondOrderDynamics<Quaternion> {
   public override Quaternion Default => Quaternion.Identity;
 
   /// <inheritdoc />
-  public SodQuaternion(float freq = 1, float zeta = 1, float response = 1, Quaternion x0 = default)
-    : base(freq, zeta, response, x0) {
-  }
-
-  /// <inheritdoc />
-  public SodQuaternion(SecondOrderDynamics.SodParams @params, Quaternion x0 = default)
+  public SodQuaternion(SodParams? @params = null, Quaternion x0 = default)
     : base(@params, x0) {
-  }
-
-  /// <inheritdoc />
-  public SodQuaternion() : this(1) {
   }
 
   /// <inheritdoc />

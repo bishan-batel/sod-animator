@@ -10,7 +10,7 @@ namespace SecondOrderDynamics.Math;
 /// <param name="params"></param>
 /// <param name="x0"></param>
 public class SodVariant(SodParams? @params, Variant x0) : SecondOrderDynamics<Variant>(@params, x0) {
-  SecondOrderDynamicsBase? _sod;
+  ISecondOrderDynamics? _sod;
 
   /// <inheritdoc />
   public override Variant Default {

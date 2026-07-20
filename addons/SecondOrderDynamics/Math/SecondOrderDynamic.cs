@@ -1,7 +1,6 @@
 #nullable enable
 
 using System.Diagnostics.CodeAnalysis;
-using Godot;
 
 namespace SecondOrderDynamics.Math;
 
@@ -15,7 +14,10 @@ namespace SecondOrderDynamics.Math;
 /// </summary>
 /// <typeparam name="T">The type of variable this system operates on</typeparam>
 [SuppressMessage("ReSharper", "MemberCanBeProtected.Global")]
-public abstract class SecondOrderDynamics<T> : SecondOrderDynamicsBase where T : struct {
+public abstract class SecondOrderDynamics<T> : ISecondOrderDynamics where T : struct {
+  /// <inheritdoc />
+  public SodParams? Params { get; set; }
+
   /// <summary>
   /// Current 'positional state' of our system
   /// </summary>
@@ -32,21 +34,25 @@ public abstract class SecondOrderDynamics<T> : SecondOrderDynamicsBase where T :
   public T Yd;
 
   /// <summary>
-  /// Factory for a default value (used to 
+  /// Factory for a default value, this is used if the system ever blows up (<see cref="IsValid"/>), in which certain variables may be reset to this value.
   /// </summary>
   public virtual T Default => default;
 
 
+  /// <summary>
+  /// Constructor with a given SodParams and initial x value
+  /// </summary>
+  /// <param name="params"></param>
+  /// <param name="x0"></param>
   protected SecondOrderDynamics(SodParams? @params, T x0) {
     Params = @params;
     ConstrainTo(x0);
   }
 
-  protected SecondOrderDynamics(float freq, float zeta, float response, T x0) :
-    this(new SodParams(freq, zeta, response), x0) {
-  }
-
-  protected SecondOrderDynamics() : this(new SodParams(), default) {
+  /// <summary>
+  /// Default constructor, note that this leaves Params null, which will prevent simulation
+  /// </summary>
+  protected SecondOrderDynamics() : this(null, default) {
   }
 
 
@@ -105,7 +111,8 @@ public abstract class SecondOrderDynamics<T> : SecondOrderDynamicsBase where T :
   /// <returns></returns>
   public abstract bool IsValid(T value);
 
-  public override bool IsValidTypeErased(object? obj) {
+  /// <inheritdoc />
+  public bool IsValidTypeErased(object? obj) {
     if (obj is T value) {
       return IsValid(value);
     }
@@ -113,7 +120,9 @@ public abstract class SecondOrderDynamics<T> : SecondOrderDynamicsBase where T :
     return false;
   }
 
-  public override object? UpdateTypeErased(float delta, object x, object? xd = null) {
+
+  /// <inheritdoc />
+  public object UpdateTypeErased(float delta, object x, object? xd = null) {
     return Update(delta, (T)x, xd is null ? null : (T)xd);
   }
 }

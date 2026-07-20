@@ -9,18 +9,13 @@ namespace SecondOrderDynamics.Math;
 /// </summary>
 public class SodFloat : SecondOrderDynamics<float> {
   /// <summary>
-  /// A flag that, when active, modifies the simulation to use angular differences - this is desirable when interpolating angles.
+  /// A flag that, when active, modifies the simulation to use angular differences - this is desirable when interpolating angles. Note this will treat the system in Radians, NOT Degrees.
   /// For more complex rotations, consider the use of <see cref="SodQuaternion"/>
   /// </summary>
   public bool IsAngular { set; get; }
 
   /// <inheritdoc />
-  public SodFloat(float freq = 1, float zeta = 1, float response = 1, float x0 = 0)
-    : base(freq, zeta, response, x0) {
-  }
-
-  /// <inheritdoc />
-  public SodFloat(SodParams @params, float x0 = 0)
+  public SodFloat(SodParams? @params, float x0 = 0)
     : base(@params, x0) {
   }
 

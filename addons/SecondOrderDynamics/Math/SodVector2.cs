@@ -8,19 +8,9 @@ namespace SecondOrderDynamics.Math;
 /// Second order system for interpolating a 2D Vector.
 /// </summary>
 public class SodVector2 : SecondOrderDynamics<Vector2> {
-  
   /// <inheritdoc />
-  public SodVector2(float freq = 1, float zeta = 1, float response = 1, Vector2 x0 = default)
-    : base(freq, zeta, response, x0) {
-  }
-
-  /// <inheritdoc />
-  public SodVector2(SecondOrderDynamics.SodParams @params, Vector2 x0 = default)
+  public SodVector2(SodParams? @params = null, Vector2 x0 = default)
     : base(@params, x0) {
-  }
-
-  /// <inheritdoc />
-  public SodVector2() : this(1) {
   }
 
   /// <inheritdoc />
@@ -33,7 +23,7 @@ public class SodVector2 : SecondOrderDynamics<Vector2> {
     }
 
     float k2Stable = Params.GetK2Stable(delta);
-    
+
     Y += delta * Yd;
     Yd += delta * (x + Params.K3 * (Vector2)xd - Y - Params.K1 * Yd) / k2Stable;
     return Y;

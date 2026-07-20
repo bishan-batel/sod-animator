@@ -2,7 +2,6 @@
 #nullable enable
 
 using Godot;
-using SecondOrderDynamics.Math;
 
 namespace SecondOrderDynamics.Editor;
 

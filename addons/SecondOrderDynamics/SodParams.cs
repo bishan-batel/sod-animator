@@ -75,7 +75,7 @@ public partial class SodParams : Resource {
 
 
   /// <summary>
-  /// Construct from Frequency, Zeta, & Response Values
+  /// Construct from Frequency, Zeta, and Response Values
   /// </summary>
   public SodParams(float freq = 1, float zeta = 1, float response = 1) {
     SetDirectly(freq, zeta, response);

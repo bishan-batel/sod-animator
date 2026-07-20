@@ -424,7 +424,6 @@ public partial class SodRemotePosition3D : Node3D {
     }
   }
 
-  /// <inheritdoc />
   #endif
 
   #endregion
