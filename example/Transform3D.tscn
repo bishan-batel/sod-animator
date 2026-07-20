@@ -51,9 +51,11 @@ func random_pos():
 [node name="Transform3d" type="Node3D" unique_id=1583451133]
 
 [node name="SodRemotePosition3D" type="Node3D" parent="." unique_id=419958830 node_paths=PackedStringArray("Following")]
-transform = Transform3D(-0.21307139, -0.031476565, -0.9763823, 0.00019513977, 0.9993216, -0.03225961, 0.97687906, -0.0070651146, -0.21295659, 5.141847, 0, 5.242619)
-position = Vector3(5.141847, 0, 5.242619)
-rotation = Vector3(0.032269824, -1.785541, 0.00019527148)
+editor_description = "SOD Animator for a 3D Node. This node will follow / interpolate to another Node3D's transform (with options to enable following position, rotation, and scale individually) using a SOD system 
+which can be configured with the 'Params' property."
+transform = Transform3D(0.72694856, 0.079211, 0.68187803, 0.0035788377, 0.9927114, -0.11913695, -0.68644446, 0.08906047, 0.7214915, 4.3874617, 0, 7.0008254)
+position = Vector3(4.3874617, 0, 7.0008254)
+rotation = Vector3(0.119438514, 0.75717825, 0.0036051145)
 script = ExtResource("1_akvq2")
 Following = NodePath("../Marker3D")
 PositionParams = SubResource("Resource_jjot6")
@@ -72,5 +74,5 @@ mesh = SubResource("BoxMesh_jjot6")
 metadata/_edit_lock_ = true
 
 [node name="Marker3D" type="Marker3D" parent="." unique_id=419163737]
-transform = Transform3D(-0.22324394, -0.032083273, -0.9742324, 0, 0.99945533, -0.032913968, 0.9747602, -0.0073478553, -0.22312307, 5.1679068, 0, 5.235914)
+transform = Transform3D(0.6301121, 0.10023544, 0.7700034, 0, 0.99162954, -0.12908588, -0.77650005, 0.08133878, 0.62484026, 4.544539, 0, 9.138296)
 script = SubResource("GDScript_jjot6")

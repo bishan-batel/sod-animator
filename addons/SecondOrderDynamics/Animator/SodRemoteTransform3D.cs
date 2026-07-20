@@ -210,6 +210,11 @@ public partial class SodRemoteTransform3D : Node3D {
   /// </summary>
   public SodRemoteTransform3D() {
     SetNotifyTransform(Engine.IsEditorHint());
+    EditorDescription =
+      """
+      SOD Animator for a 3D Node. This node will follow / interpolate to another Node3D's transform (with options to enable following position, rotation, and scale individually) using a SOD system 
+      which can be configured with the 'Params' property.
+      """;
   }
 
   /// <summary>

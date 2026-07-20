@@ -24,8 +24,8 @@ position = Vector2(594, 252)
 rotation = -0.75999343
 
 [node name="SodRemoteTransform2D" type="Node2D" parent="." unique_id=2072307890 node_paths=PackedStringArray("Following")]
-position = Vector2(594.0001, 251.99997)
-rotation = -0.81068957
+position = Vector2(594, 252)
+rotation = -0.75999343
 script = ExtResource("1_153rd")
 Following = NodePath("../Anchor")
 PositionParams = SubResource("Resource_153rd")
