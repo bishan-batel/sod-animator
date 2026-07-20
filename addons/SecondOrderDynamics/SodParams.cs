@@ -98,9 +98,8 @@ public partial class SodParams : Resource {
   }
 
   void _updateConstants() {
-    const float tau = Mathf.Pi * 2f;
     K1 = Zeta / (Mathf.Pi * Frequency);
-    K2 = 1f / (tau * Frequency * tau * Frequency);
-    K3 = Response * Zeta / (tau * Frequency);
+    K2 = 1f / (Mathf.Tau * Frequency * Mathf.Tau * Frequency);
+    K3 = Response * Zeta / (Mathf.Tau * Frequency);
   }
 }
