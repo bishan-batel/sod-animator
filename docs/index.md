@@ -1,6 +1,6 @@
 ---
-_layout: landing
----
+<!-- _layout: landing -->
+<!-- --- -->
 
 
 Hello! Thank you for checking out this plugin, for more details for usage head over to the docs section,

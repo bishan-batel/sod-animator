@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://rwxs7s42kh61"]
+
+[ext_resource type="Script" uid="uid://c6r6w6blmkr1w" path="res://addons/SecondOrderDynamics/Animator/SodRemotePosition3D.cs" id="1_akvq2"]
+[ext_resource type="Script" uid="uid://cpyqqgoprjn5d" path="res://addons/SecondOrderDynamics/SodParams.cs" id="2_jjot6"]
+
+[sub_resource type="Resource" id="Resource_akvq2"]
+script = ExtResource("2_jjot6")
+Frequency = 2.0
+Zeta = 0.5
+metadata/_custom_type_script = "uid://cpyqqgoprjn5d"
+
+[sub_resource type="Resource" id="Resource_jjot6"]
+script = ExtResource("2_jjot6")
+Frequency = 2.0
+Zeta = 0.5
+Response = 3.049
+metadata/_custom_type_script = "uid://cpyqqgoprjn5d"
+
+[sub_resource type="BoxMesh" id="BoxMesh_fayhq"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_jjot6"]
+size = Vector3(1, 0.2, 0.2)
+
+[node name="Transform3d" type="Node3D" unique_id=1583451133]
+
+[node name="SodRemotePosition3D" type="Node3D" parent="." unique_id=419958830 node_paths=PackedStringArray("Following")]
+transform = Transform3D(0.7185418, -0.43841, 0.539806, -0.608049, -0.7727473, 0.18175532, 0.3374783, -0.45885098, -0.82185143, -0.77990246, 3.5676188, 5.893243)
+position = Vector3(-0.77990246, 3.5676188, 5.893243)
+rotation = Vector3(-0.18278372, 2.56044, -2.474919)
+script = ExtResource("1_akvq2")
+Following = NodePath("../Marker3D")
+PositionParams = SubResource("Resource_akvq2")
+RotationParams = SubResource("Resource_jjot6")
+RunInEditor = true
+metadata/_custom_type_script = "uid://c6r6w6blmkr1w"
+metadata/_edit_lock_ = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SodRemotePosition3D" unique_id=398217702]
+mesh = SubResource("BoxMesh_fayhq")
+metadata/_edit_lock_ = true
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="SodRemotePosition3D" unique_id=984215369]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.58, 0, 0)
+mesh = SubResource("BoxMesh_jjot6")
+metadata/_edit_lock_ = true
+
+[node name="Marker3D" type="Marker3D" parent="." unique_id=419163737]
+transform = Transform3D(0.71912813, -0.4391923, 0.5384839, -0.6080741, -0.7727917, 0.1817676, 0.33630496, -0.45815226, -0.82279766, -0.77990246, 3.5676188, 5.893243)

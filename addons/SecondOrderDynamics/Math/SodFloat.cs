@@ -39,7 +39,8 @@ public class SodFloat : SecondOrderDynamics<float> {
       XPrev = x;
     }
 
-    float k2Stable = Mathf.Max(Params.K2, Mathf.Max(delta * delta / 2f + delta * Params.K1 / 2f, delta * Params.K1));
+    float k2Stable = Params.GetK2Stable(delta);
+    
     Y += delta * Yd;
     Yd += delta * (x + Params.K3 * (float)xd - Y - Params.K1 * Yd) / k2Stable;
     return Y;
