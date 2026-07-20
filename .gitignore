@@ -5,6 +5,23 @@ build/
 _site/
 api/
 
-# User-Specific
-*.DotSettings.user
+export.cfg
+export_credentials.cfg
+*.tmp
+
 *.bin
+
+# OS Specific
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Affinity Files
+*.lock.af
+*.lock
+
+# User-Specific
+*.user
+
+.mono/
+mono_crash.*.json
