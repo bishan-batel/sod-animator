@@ -6,13 +6,13 @@
 
 [sub_resource type="Resource" id="Resource_6x8du"]
 script = ExtResource("2_153rd")
-Zeta = 0.37
-Response = 1.0
+Frequency = 0.981
+Zeta = 0.459
 metadata/_custom_type_script = "uid://cpyqqgoprjn5d"
 
 [sub_resource type="Resource" id="Resource_chq62"]
 script = ExtResource("2_153rd")
-Response = 1.0
+Response = 0.0
 metadata/_custom_type_script = "uid://cpyqqgoprjn5d"
 
 [sub_resource type="Resource" id="Resource_pbopk"]
@@ -23,21 +23,21 @@ metadata/_custom_type_script = "uid://cpyqqgoprjn5d"
 [node name="Transform2d" type="Node2D" unique_id=1626683008]
 
 [node name="Anchor" type="Marker2D" parent="." unique_id=1888575354]
-position = Vector2(453, 290)
+position = Vector2(490.00006, 241)
+rotation = -0.026052322
 gizmo_extents = 72.0
 
-[node name="SodRemoteTransform2D" type="Node2D" parent="." unique_id=2072307890]
-position = Vector2(453.00003, 290.00003)
-rotation = -0.0010466052
-scale = Vector2(1.0000005, -0.9999997)
+[node name="SodRemoteTransform2D" type="Node2D" parent="." unique_id=2072307890 node_paths=PackedStringArray("Following")]
+position = Vector2(490.00006, 241)
+rotation = -0.026052322
 script = ExtResource("1_d0kg7")
 Following = NodePath("../Anchor")
-RunInEditor = true
 PositionParams = SubResource("Resource_6x8du")
 RotationParams = SubResource("Resource_chq62")
 ScaleParams = SubResource("Resource_pbopk")
+RunInEditor = true
 metadata/_custom_type_script = "uid://bjixespgf4ybd"
 
 [node name="SodParams" type="Sprite2D" parent="SodRemoteTransform2D" unique_id=523883890]
-scale = Vector2(0.19812503, 0.19812503)
+scale = Vector2(0.1, 0.1)
 texture = ExtResource("2_6x8du")

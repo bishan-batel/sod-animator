@@ -1,6 +1,7 @@
 #if TOOLS
 #nullable enable
 
+using System;
 using Godot;
 using SecondOrderDynamics.Math;
 
@@ -12,7 +13,8 @@ namespace SecondOrderDynamics.Editor;
 /// <param name="godotObject"></param>
 /// <param name="name"></param>
 [Tool]
-public partial class SodSingleEditor(GodotObject? godotObject, string name) : ColorRect {
+public partial class SodSingleEditor(GodotObject? godotObject, string name) : PanelContainer {
+  const float TotalSimulationTime = 4;
   const float BaseLine = -1f;
   const float DeltaTime = 1f / 120;
 
@@ -26,6 +28,31 @@ public partial class SodSingleEditor(GodotObject? godotObject, string name) : Co
   GodotObject? _godotObject = godotObject;
   string _name = name;
 
+  ColorRect _graphPanel = new();
+
+
+  /// <summary>
+  /// Gets the default step response function
+  /// </summary>
+  /// <returns></returns>
+  public static Curve GetStepResponseCurve() {
+    var curve = new Curve();
+    curve.AddPoint(new Vector2(0, BaseLine));
+    curve.AddPoint(new Vector2(1, BaseLine + 1));
+    return curve;
+  }
+
+  OptionButton _simulationTypeButton = new() {
+    Name = "Test Function",
+  };
+
+  enum SimulationCurve {
+    Step,
+    Sin,
+    Triangle,
+    Square
+  }
+
 
   /// <summary>
   /// Default Constructor
@@ -37,16 +64,37 @@ public partial class SodSingleEditor(GodotObject? godotObject, string name) : Co
   public override void _Ready() {
     Control theme = EditorInterface.Singleton.GetBaseControl();
 
-    Color = theme.GetThemeColor("base_color", "Editor").Darkened(0.2f);
+    AddChild(_graphPanel);
+    _graphPanel.Color = theme.GetThemeColor("base_color", "Editor").Darkened(0.2f);
     _targetLine.DefaultColor = theme.GetThemeColor("font_color", "Editor").Darkened(0.1f);
 
     _targetLine.Width = 2;
 
-    AddChild(_targetLine);
+    _graphPanel.AddChild(_targetLine);
 
     // _line.Modulate = Colors.AliceBlue;
     _line.Width = 3;
-    AddChild(_line);
+    _graphPanel.AddChild(_line);
+
+    _simulationTypeButton.AddItem("Step Response", (int)SimulationCurve.Step);
+    _simulationTypeButton.AddItem("Sin Response", (int)SimulationCurve.Sin);
+    _simulationTypeButton.AddItem("Triangle Response", (int)SimulationCurve.Triangle);
+    _simulationTypeButton.AddItem("Square Response", (int)SimulationCurve.Square);
+
+    _simulationTypeButton.Selected = (int)SimulationCurve.Step;
+
+    var simulationOptions = new VBoxContainer();
+
+    var simulationTypeContainer = new HBoxContainer();
+    simulationTypeContainer.AddChild(new Label { Text = "Simulation Preview Curve" });
+    simulationTypeContainer.AddChild(_simulationTypeButton);
+
+    simulationOptions.AddChild(simulationTypeContainer);
+
+    var dropdown = new FoldableContainer { Title = "Editor Preview Settings", Folded = true };
+    dropdown.AddChild(simulationOptions);
+    dropdown.TitleAlignment = HorizontalAlignment.Right;
+    // AddChild(dropdown);
   }
 
   /// <inheritdoc />
@@ -58,13 +106,12 @@ public partial class SodSingleEditor(GodotObject? godotObject, string name) : Co
 
     SodFloat state = new((SodParams)_godotObject.Get(_name), BaseLine);
 
-    CustomMinimumSize = new Vector2(0, GetParentAreaSize().X / (16f / 9f));
+    _graphPanel.CustomMinimumSize = new Vector2(0, _graphPanel.GetParentAreaSize().X / (16f / 9f));
 
 
-    Vector2 dimensions = GetRect().Size;
+    Vector2 dimensions = _graphPanel.GetRect().Size;
 
     // float totalTime = dimensions.X / 100f;
-    float totalTime = 4;
 
     _line.ClearPoints();
     _line.Antialiased = true;
@@ -76,13 +123,17 @@ public partial class SodSingleEditor(GodotObject? godotObject, string name) : Co
     float lastY = state.Y;
     var grad = new Gradient();
 
-    for (float time = 0; time <= totalTime; time += DeltaTime) {
-      float y = 1 - state.Update(DeltaTime, time < StepUpTime ? BaseLine : BaseLine + 1);
+    _targetLine.ClearPoints();
+
+    for (float time = 0; time <= TotalSimulationTime; time += DeltaTime) {
+      float x = _getX(time);
+      float y = 1 - state.Update(DeltaTime, x);
 
       // grad.AddPoint();
 
-      float percent = time / totalTime;
+      float percent = time / TotalSimulationTime;
 
+      _targetLine.AddPoint(new Vector2(dimensions.X * percent, height * (1 - x)));
       _line.AddPoint(new Vector2(dimensions.X * percent, height * y));
 
 
@@ -98,29 +149,22 @@ public partial class SodSingleEditor(GodotObject? godotObject, string name) : Co
     }
 
 
-    _targetLine.ClearPoints();
-
-    _targetLine.AddPoint(new Vector2(
-      0, height * (1 - BaseLine)
-    ));
-
-    _targetLine.AddPoint(new Vector2(
-      dimensions.X * (StepUpTime / totalTime), height * (1 - BaseLine)
-    ));
-
-    _targetLine.AddPoint(new Vector2(
-      dimensions.X * (StepUpTime / totalTime), height * (-BaseLine)
-    ));
-
-    _targetLine.AddPoint(new Vector2(
-      dimensions.X, height * -BaseLine
-    ));
-
-
     grad.InterpolationColorSpace = Gradient.ColorSpace.Oklab;
     grad.InterpolationMode = Gradient.InterpolationModeEnum.Cubic;
 
     _line.Gradient = grad;
+  }
+
+  float _getX(float time) {
+    var type = (SimulationCurve)_simulationTypeButton.Selected;
+
+    return type switch {
+      SimulationCurve.Step => time < StepUpTime ? BaseLine : BaseLine + 1,
+      SimulationCurve.Sin => Mathf.Abs(BaseLine) * Mathf.Sin(time * 4) * 0.2f,
+      SimulationCurve.Triangle => 2 * Mathf.Abs(time - Mathf.Floor(time + 0.5f)),
+      SimulationCurve.Square => Mathf.Round(Mathf.Sin(time * Mathf.Tau)) * Mathf.Abs(BaseLine),
+      _ => 0
+    };
   }
 }
 

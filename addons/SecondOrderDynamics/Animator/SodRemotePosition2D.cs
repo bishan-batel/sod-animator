@@ -31,31 +31,9 @@ public partial class SodRemotePosition2D : Node2D {
   }
 
   /// <summary>
-  /// Whether to simulate this system when running in-editor. Note if this can run in the editor this forces
-  /// <see cref="UsePhysicsProcess"/> to be disabled.
-  /// </summary>
-  [Export(PropertyHint.None, "Whether to simulate this system in-editor. Enabling this option will force UsePhysicsProcess to be false, as PhysicsProcess is not invoked in-editor.")]
-  public bool RunInEditor {
-    set {
-      _runInEditor = value;
-      if (_runInEditor) _usePhysicsProcess = false;
-
-
-      #if TOOLS
-      if (Engine.IsEditorHint() && !RunInEditor && TryGetFollowing(out Node2D following)) {
-        _forceTransformToFollowing(following);
-      }
-
-      NotifyPropertyListChanged();
-      #endif
-    }
-    get => _runInEditor;
-  }
-
-  /// <summary>
   /// Whether to only simulate this on physics process, if this is false then this will run every rendered frame
   /// </summary>
-  [Export]
+  [Export(PropertyHint.None, "Whether to only simulate this on physics process, if this is false then this will run every rendered frame.")]
   public bool UsePhysicsProcess {
     set {
       _usePhysicsProcess = value;
@@ -169,10 +147,54 @@ public partial class SodRemotePosition2D : Node2D {
     get => _scaleParams;
   }
 
+  /// <summary>
+  /// Whether to simulate this system when running in-editor. Note if this can run in the editor this forces
+  /// <see cref="UsePhysicsProcess"/> to be disabled.
+  /// </summary>
+  [ExportGroup("Editor"), Export(PropertyHint.None, "Whether to simulate this system in-editor. Enabling this option will force UsePhysicsProcess to be false, as PhysicsProcess is not invoked in-editor.")]
+  public bool RunInEditor {
+    set {
+      if (value != _runInEditor) {
+        ResetAllSimulations();
+      }
+
+      _runInEditor = value;
+      if (_runInEditor) _usePhysicsProcess = false;
+
+
+      #if TOOLS
+
+      if (Engine.IsEditorHint() && !RunInEditor && TryGetFollowing(out Node2D following)) {
+        _forceTransformToFollowing(following);
+      }
+
+      NotifyPropertyListChanged();
+      QueueRedraw();
+      #endif
+    }
+    get => _runInEditor;
+  }
+
+  /// <summary>
+  /// Whether to draw helper gizmos when in-editor
+  /// </summary>
+  [Export]
+  public bool DrawGizmos {
+    set {
+      _drawGizmos = value;
+      #if TOOLS
+      QueueRedraw();
+      #endif
+    }
+    get => _drawGizmos;
+  }
+
   #endregion
 
+
+  #region Backing Fields
+
   bool _usePhysicsProcess;
-  bool _runInEditor;
 
   SodVector2? _sodPosition;
   bool _shouldUpdatePosition = true;
@@ -188,10 +210,16 @@ public partial class SodRemotePosition2D : Node2D {
   bool _useLocalCoordinates;
   Node2D? _following;
 
-  void _updateProcessMode() {
-    bool anyActive = UpdatePosition || UpdateRotation || UpdateScale;
-    SetProcess(!_usePhysicsProcess && anyActive);
-    SetPhysicsProcess(_usePhysicsProcess && anyActive);
+  bool _runInEditor;
+  bool _drawGizmos = true;
+
+  #endregion
+
+  /// <summary>
+  /// Default constructor
+  /// </summary>
+  public SodRemotePosition2D() {
+    SetNotifyTransform(Engine.IsEditorHint());
   }
 
   /// <summary>
@@ -210,17 +238,17 @@ public partial class SodRemotePosition2D : Node2D {
   }
 
   /// <summary>
-  /// Default constructor
+  /// Forces all simulations to restart, note this will not snap the transforms to the target until the next simulation frame
   /// </summary>
-  public SodRemotePosition2D() {
-    SetNotifyTransform(Engine.IsEditorHint());
+  public void ResetAllSimulations() {
+    _sodPosition = null;
+    _sodRotation = null;
+    _sodScale = null;
   }
 
   /// <inheritdoc />
   public override void _EnterTree() {
-    _sodPosition = null;
-    _sodRotation = null;
-    _sodScale = null;
+    ResetAllSimulations();
 
     #if TOOLS
     if (Engine.IsEditorHint() && !RunInEditor && TryGetFollowing(out Node2D following)) {
@@ -229,12 +257,7 @@ public partial class SodRemotePosition2D : Node2D {
     #endif
   }
 
-  /// <inheritdoc />
-  public override void _ExitTree() {
-    _sodPosition = null;
-    _sodRotation = null;
-    _sodScale = null;
-  }
+  #region Simulation
 
   /// <inheritdoc />
   public override void _Process(double delta) {
@@ -250,7 +273,17 @@ public partial class SodRemotePosition2D : Node2D {
     }
   }
 
+  void _updateProcessMode() {
+    bool anyActive = UpdatePosition || UpdateRotation || UpdateScale;
+    SetProcess(!_usePhysicsProcess && anyActive);
+    SetPhysicsProcess(_usePhysicsProcess && anyActive);
+  }
+
   void _update(float delta) {
+    #if TOOLS
+    if (Engine.IsEditorHint() && !RunInEditor) return;
+    #endif
+
     if (!TryGetFollowing(out Node2D following)) return;
 
     if (UpdatePosition && _updatePosition(delta, out Vector2 position, UseLocalCoordinates ? following.Position : following.GlobalPosition)) {
@@ -304,6 +337,7 @@ public partial class SodRemotePosition2D : Node2D {
     return true;
   }
 
+  #endregion
 
   /// <inheritdoc />
   public override void _ValidateProperty(Dictionary property) {
@@ -365,19 +399,50 @@ public partial class SodRemotePosition2D : Node2D {
     }
   }
 
+  #region Editor Only
+
   #if TOOLS
   /// <inheritdoc />
   public override void _Notification(int what) {
-    if (what != NotificationTransformChanged) {
-      base._Notification(what);
-      return;
-    }
-
-    if (Engine.IsEditorHint() && !RunInEditor && TryGetFollowing(out Node2D following)) {
-      _forceTransformToFollowing(following);
+    if (what == NotificationTransformChanged) {
+      _notifTransformChanged();
     }
 
     base._Notification(what);
   }
+
+  /// helper for on transform changed
+  void _notifTransformChanged() {
+    if (!Engine.IsEditorHint()) {
+      return;
+    }
+
+    // make sure we have valid following node
+    if (!TryGetFollowing(out Node2D following)) return;
+
+    // if in editor and we aren't simulating force it to just match to the target
+    if (!RunInEditor) {
+      _forceTransformToFollowing(following);
+    }
+    else {
+      if (DrawGizmos) QueueRedraw();
+    }
+  }
+
+  /// <inheritdoc />
+  public override void _Draw() {
+    base._Draw();
+
+    if (!Engine.IsEditorHint()) {
+      return;
+    }
+
+    if (!TryGetFollowing(out Node2D following)) return;
+
+    DrawDashedLine(Vector2.Zero, ToLocal(following.GlobalPosition), Colors.AntiqueWhite);
+  }
+
   #endif
+
+  #endregion
 }
